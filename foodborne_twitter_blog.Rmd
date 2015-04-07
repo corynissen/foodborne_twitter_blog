@@ -1,0 +1,55 @@
+---
+output: html_document
+---
+
+[Foodborne Chicago](https://www.foodbornechicago.org/) is an application that provides an easy online interface to report incidents of food poisoning to the [Chicago Department of Public Health](http://www.cityofchicago.org/city/en/depts/cdph.html) through the city's [open311](http://www.open311.org/) interface. This allows residents to fill out a simple online form to report an incident instead of calling 311 directly. Regardless of the mode of reporting, the reports end up at the Health Department, where they are reviewed. If a given case meets the Health Department's criteria, a CDPH inspector is sent to the restaurant to do an inspection. In many cases, nothing is found, but in some cases, serious violations are found and fixed.
+
+The second part of the application uses the [Twitter API](https://dev.twitter.com/overview/documentation) to proactively find folks complaining of food poisoning in Chicago and send them a link to the form to fill out a report. The Twitter API takes a bounding box (the Chicago area) and a search term (food poisoning) and returns those tweets. Since the end of November 2014, the number of tweets that the API returns have gone down drastically. Here's a graph of the number of daily tweets since 2014...
+
+```{r echo=FALSE, fig.width=9.5, fig.height=5, fig.align='center', message=FALSE}
+library(ggplot2)
+df <- read.csv("fp.csv", stringsAsFactors=F, skip=1)
+df$Date <- as.Date(df$Date, format="%m/%d/%Y")
+df <- df[527:nrow(df),]
+ggplot(df) + geom_line(aes(x=Date, y=Total.Result)) + ylab("Total Number of Tweets") + 
+  theme(axis.ticks.x=element_blank(), 
+                   panel.grid.major.x = element_blank(), 
+                   panel.grid.minor.x = element_blank(), 
+                   panel.grid.minor.y = element_blank(), 
+                   panel.background=element_blank(), 
+                   panel.grid.major.y=element_line(colour="gray", size=.1), 
+                   legend.position="none") 
+ggsave("Total_tweets_plot.jpg")
+```
+
+Foodborne Chicago was not the only application to be affected by this issue. There was an issue logged on the [twittercommunity.com](https://twittercommunity.com/t/search-api-returning-very-sparse-geocode-results/27998/11) message board. An engineer from Twitter replied that there are two issues affecting the number of tweets returned. One is low coverage of tweets with explicit geocodes attached and the second issue is the lack of fallback to the user profile for location approximation. At first the engineers gave an estimate of days to get the issue resolved. The final update has a start date for work on the fix no earlier than April 1, 2015. Hopefully, a team has been assembled and is working on it now. 
+
+The Foodborne Chicago application continues to see an increase in the number of submission via the web form, but this Twitter issue has affected our ability to be proactive and respond to those directly affected with food poisoning. This is a graph of the number of submissions per week through the Foodborne web form since January 2014.  
+```{r echo=FALSE, fig.width=9.5, fig.height=5, fig.align='center', message=FALSE}
+library(lubridate)
+df <- read.csv("submissions.csv", stringsAsFactors=F)
+df$Created.At <- substring(df$Created.At, 1, 10)
+df$date <- as.Date(df$Created.At, format="%Y-%m-%d")
+df$week_num <- format(df$date, format="%Y-%W")
+df$week_num2 <- floor_date(df$date, "week")
+tab <- table(df$week_num2)
+df2 <- data.frame(date=names(tab), count=as.numeric(tab))
+df2$date <- as.Date(df2$date, format="%Y-%m-%d")
+df2 <- df2[40:nrow(df2)-1,]
+ggplot(df2) + geom_line(aes(x=date, y=count)) + xlab("Date") + ylab("Number of Submissions Per Week") +
+  theme(axis.ticks.x=element_blank(), 
+                   panel.grid.major.x = element_blank(), 
+                   panel.grid.minor.x = element_blank(), 
+                   panel.grid.minor.y = element_blank(), 
+                   panel.background=element_blank(), 
+                   panel.grid.major.y=element_line(colour="gray", size=.1), 
+                   legend.position="none") 
+ggsave("Submissions_count_plot.jpg")
+
+```
+
+This Twitter API issue hasn't prevented us from being effective in Chicago, but it's unclear how many more submissions and cases of food poisoning would have been caught with a proactive approach that is enabled using the Twitter API. Twitter has been a great tool for us, and we hope they can fix this issue soon.
+
+
+
+
