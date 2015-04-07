@@ -1,6 +1,3 @@
----
-output: html_document
----
 
 [Foodborne Chicago](https://www.foodbornechicago.org/) is an application that provides an easy online interface to report incidents of food poisoning to the [Chicago Department of Public Health](http://www.cityofchicago.org/city/en/depts/cdph.html) through the city's [open311](http://www.open311.org/) interface. This allows residents to fill out a simple online form to report an incident instead of calling 311 directly. Regardless of the mode of reporting, the reports end up at the Health Department, where they are reviewed. If a given case meets the Health Department's criteria, a CDPH inspector is sent to the restaurant to do an inspection. In many cases, nothing is found, but in some cases, serious violations are found and fixed.
 
